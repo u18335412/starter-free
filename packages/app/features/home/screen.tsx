@@ -1,97 +1,206 @@
 import {
-  Anchor,
   Button,
   H1,
+  H2,
+  ListItem,
   Paragraph,
-  Separator,
-  Sheet,
   useToastController,
   XStack,
+  YGroup,
+  Text,
   YStack,
+  useMedia,
+  VisuallyHidden,
 } from '@my/ui'
-import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { useState } from 'react'
+import { Check, ListTodo, Plus, Trash2 } from '@tamagui/lucide-icons'
+import { FC, useEffect } from 'react'
 import { useLink } from 'solito/link'
+import { TTodo, useTodoStore } from '../store'
 
-export function HomeScreen() {
+const Todos: FC<{
+  data: TTodo[]
+}> = ({ data }) => {
+  const { removeTodo, toggleTodo, sortBy } = useTodoStore((state) => ({
+    removeTodo: state.removeTodo,
+    toggleTodo: state.toggleTodo,
+    sortBy: state.sortBy,
+  }))
+  const toaster = useToastController()
   const linkProps = useLink({
-    href: '/user/nate',
+    href: '/create-todo/',
   })
 
-  return (
-    <YStack f={1} jc="center" ai="center" p="$4" space>
-      <YStack space="$4" bc="$background">
-        <H1 ta="center">Welcome to Tamagui.</H1>
-        <Paragraph ta="center">
-          Here's a basic starter to show navigating from one screen to another. This screen uses the
-          same code on Next.js and React Native.
-        </Paragraph>
-
-        <Separator />
-        <Paragraph ta="center">
-          Made by{' '}
-          <Anchor col="$color12" href="https://twitter.com/natebirdman" target="_blank">
-            @natebirdman
-          </Anchor>
-          ,{' '}
-          <Anchor
-            col="$color12"
-            href="https://github.com/tamagui/tamagui"
-            target="_blank"
-            rel="noreferrer"
+  if (data.length === 0) {
+    return (
+      <XStack jc="center">
+        <YStack ai="center">
+          <ListTodo
+            p="$2.5"
+            size="$2"
+            style={{
+              borderColor: 'white',
+              borderWidth: 2,
+              borderRadius: 50,
+              width: 50,
+              height: 50,
+            }}
+          />
+          <H2 size="$8" mt="$4">
+            No todos
+          </H2>
+          <Paragraph
+            maw="$20"
+            ai="center"
+            jc="center"
+            style={{
+              textAlign: 'center',
+            }}
           >
-            give it a ⭐️
-          </Anchor>
-        </Paragraph>
-      </YStack>
-
-      <XStack>
-        <Button {...linkProps}>Link to user</Button>
+            Get started by adding a new todo item. You can add as many as you like.
+          </Paragraph>
+          <Button {...linkProps} mt="$4">
+            <Plus size="$1" aria-hidden />
+            Add Todo
+          </Button>
+        </YStack>
       </XStack>
+    )
+  }
 
-      <SheetDemo />
-    </YStack>
+  useEffect(() => {}, [])
+
+  return (
+    <YGroup>
+      {data.length > 0 &&
+        data
+          .sort((a, b) => {
+            if (sortBy === 'asc') {
+              return Number(b.completed) - Number(a.completed)
+            }
+
+            return Number(a.completed) - Number(b.completed)
+          })
+          .map((todo) => (
+            <YGroup.Item key={todo.id}>
+              <ListItem>
+                <XStack jc="space-between" f={1}>
+                  <XStack ai="center" gap="$4">
+                    {/* For some reason this Checkbox is showing an error during mount and state change on mobile  */}
+                    {/* <Checkbox
+                  onCheckedChange={() => {
+                    toggleTodo(todo.id)
+                  }}
+                  defaultChecked={todo.completed}
+                  size="$4"
+                >
+                  <Checkbox.Indicator>
+                    <Check />
+                  </Checkbox.Indicator>
+                </Checkbox> */}
+                    <Button
+                      style={{
+                        borderRadius: 5,
+                        padding: 2,
+                        width: 20,
+                        height: 20,
+                      }}
+                      onPress={() => {
+                        toggleTodo(todo.id)
+                      }}
+                    >
+                      {todo.completed && <Check />}
+                    </Button>
+                    <Text>{todo.text}</Text>
+                  </XStack>
+                  <Button
+                    onPress={() => {
+                      removeTodo(todo.id)
+                      toaster.show('Todo removed.')
+                    }}
+                    style={{
+                      borderRadius: 5,
+                      padding: '2px',
+                      width: 40,
+                      height: 40,
+                    }}
+                  >
+                    <Trash2
+                      style={{
+                        width: 16,
+                        height: 16,
+                      }}
+                    />
+                  </Button>
+                </XStack>
+              </ListItem>
+            </YGroup.Item>
+          ))}
+    </YGroup>
   )
 }
 
-function SheetDemo() {
-  const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState(0)
-  const toast = useToastController()
+export function HomeScreen() {
+  const [todos, sortBy, toggleSortBy] = useTodoStore((state) => [
+    state.todos,
+    state.sortBy,
+    state.toggleSortBy,
+  ])
+  const linkProps = useLink({
+    href: '/create-todo/',
+  })
+  const media = useMedia()
 
   return (
-    <>
-      <Button
-        size="$6"
-        icon={open ? ChevronDown : ChevronUp}
-        circular
-        onPress={() => setOpen((x) => !x)}
-      />
-      <Sheet
-        modal
-        animation="medium"
-        open={open}
-        onOpenChange={setOpen}
-        snapPoints={[80]}
-        position={position}
-        onPositionChange={setPosition}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Frame ai="center" jc="center">
-          <Sheet.Handle />
+    <XStack f={1} jc="center">
+      <YStack gap="$10" bg="$gray5Dark" maw={600} p={media.gtXs ? '$6' : '$4'} w="100%">
+        <XStack jc="space-between" ai="center" ac="center">
+          <H1 size="$2">Todo App</H1>
+          {media.gtSm ? (
+            <XStack gap="$2">
+              <Button
+                onPress={() => {
+                  toggleSortBy()
+                }}
+              >
+                {sortBy === 'asc' ? 'Completed first' : 'Incomplete first'}
+              </Button>
+              <Button {...linkProps}>
+                <Plus size="$1" aria-hidden />
+                Add Todo
+              </Button>
+            </XStack>
+          ) : (
+            <Button
+              onPress={() => {
+                toggleSortBy()
+              }}
+            >
+              {sortBy === 'asc' ? 'Completed first' : 'Incomplete first'}
+            </Button>
+          )}
+        </XStack>
+
+        {media.sm && (
           <Button
-            size="$6"
-            circular
-            icon={ChevronDown}
-            onPress={() => {
-              setOpen(false)
-              toast.show('Sheet closed!', {
-                message: 'Just showing how toast works...',
-              })
+            {...linkProps}
+            style={{
+              position: 'fixed',
+              bottom: 40,
+              right: 20,
+              borderRadius: 50,
+              width: 60,
+              height: 60,
+              zIndex: 99999,
             }}
-          />
-        </Sheet.Frame>
-      </Sheet>
-    </>
+          >
+            <Plus size="$1" aria-hidden />
+            <VisuallyHidden>
+              <Text>Add Todo</Text>
+            </VisuallyHidden>
+          </Button>
+        )}
+        <Todos data={todos} />
+      </YStack>
+    </XStack>
   )
 }

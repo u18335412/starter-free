@@ -1,4 +1,4 @@
-import { UserDetailScreen } from 'app/features/user/detail-screen'
+import { CreateTodoScreen } from 'app/features/todo/create-todo-screen'
 import Head from 'next/head'
 
 export default function Page() {
@@ -7,7 +7,7 @@ export default function Page() {
       <Head>
         <title>User</title>
       </Head>
-      <UserDetailScreen />
+      <CreateTodoScreen />
     </>
   )
 }
