@@ -30,12 +30,12 @@ export function HomeScreen() {
         <Separator />
         <Paragraph ta="center">
           Made by{' '}
-          <Anchor color="$color12" href="https://twitter.com/natebirdman" target="_blank">
+          <Anchor col="$color12" href="https://twitter.com/natebirdman" target="_blank">
             @natebirdman
           </Anchor>
           ,{' '}
           <Anchor
-            color="$color12"
+            col="$color12"
             href="https://github.com/tamagui/tamagui"
             target="_blank"
             rel="noreferrer"
@@ -77,7 +77,6 @@ function SheetDemo() {
         onPositionChange={setPosition}
         dismissOnSnapToBottom
       >
-        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
         <Sheet.Frame ai="center" jc="center">
           <Sheet.Handle />
           <Button
