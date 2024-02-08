@@ -67,7 +67,6 @@ const Todos: FC<{
     )
   }
 
-  useEffect(() => {}, [])
 
   return (
     <YGroup>
@@ -76,9 +75,11 @@ const Todos: FC<{
           .sort((a, b) => {
             if (sortBy === 'asc') {
               return Number(b.completed) - Number(a.completed)
+            } else if (sortBy === 'desc') {
+              return Number(a.completed) - Number(b.completed)
             }
 
-            return Number(a.completed) - Number(b.completed)
+            return 0
           })
           .map((todo) => (
             <YGroup.Item key={todo.id}>
@@ -151,7 +152,13 @@ export function HomeScreen() {
   const media = useMedia()
 
   return (
-    <XStack f={1} jc="center">
+    <XStack
+      f={1}
+      jc="center"
+      style={{
+        position: 'relative',
+      }}
+    >
       <YStack gap="$10" bg="$gray5Dark" maw={600} p={media.gtXs ? '$6' : '$4'} w="100%">
         <XStack jc="space-between" ai="center" ac="center">
           <H1 size="$2">Todo App</H1>
@@ -185,8 +192,8 @@ export function HomeScreen() {
             {...linkProps}
             style={{
               position: 'fixed',
-              bottom: 40,
-              right: 20,
+              bottom: -500,
+              right: -290,
               borderRadius: 50,
               width: 60,
               height: 60,
