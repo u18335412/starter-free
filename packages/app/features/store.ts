@@ -16,13 +16,7 @@ interface BearState {
 }
 
 const useTodoStore = create<BearState>()((set) => ({
-  todos: [
-    {
-      id: '1',
-      text: 'My first todo',
-      completed: false,
-    },
-  ],
+  todos: [],
   sortBy: 'asc',
   toggleSortBy: () =>
     set((state) => ({

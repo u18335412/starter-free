@@ -1,5 +1,5 @@
 module.exports = function (api) {
-  api.cache(true);
+  api.cache(true)
   return {
     presets: [['babel-preset-expo', { jsxRuntime: 'automatic' }]],
     plugins: [
@@ -16,8 +16,8 @@ module.exports = function (api) {
           extensions: ['.js', '.jsx', '.tsx', '.ios.js', '.android.js'],
         },
       ],
-      // if you want reanimated support
-      // 'react-native-reanimated/plugin',
+      '@babel/plugin-proposal-export-namespace-from',
+      'react-native-reanimated/plugin',
       ...(process.env.EAS_BUILD_PLATFORM === 'android'
         ? []
         : [
@@ -30,5 +30,5 @@ module.exports = function (api) {
             ],
           ]),
     ],
-  };
-};
+  }
+}
